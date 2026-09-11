@@ -15,15 +15,31 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-/* request form — front-end only until wired to a real inbox/CRM endpoint */
+/* request form — submits to /api/leads, which syncs the lead to HubSpot */
 const form = document.getElementById('quoteForm');
 const status = document.getElementById('formStatus');
 if (form) {
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!form.checkValidity()) { form.reportValidity(); return; }
-    status.textContent = "Got it — we'll reply within one business day to schedule.";
-    status.classList.add('is-success');
-    form.querySelectorAll('input, select, button').forEach(el => el.disabled = true);
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error('Request failed');
+      status.textContent = "Got it — we'll reply within one business day to schedule.";
+      status.classList.add('is-success');
+      form.querySelectorAll('input, select, button').forEach(el => el.disabled = true);
+    } catch (err) {
+      status.textContent = "Something went wrong — email us directly and we'll get right back to you.";
+      submitBtn.disabled = false;
+    }
   });
 }
