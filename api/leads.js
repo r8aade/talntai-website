@@ -2,7 +2,7 @@ async function sendLeadNotification(body) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return;
 
-  const notifyTo = process.env.LEAD_NOTIFICATION_EMAIL || 'hire@talntai.com';
+  const notifyTo = process.env.LEAD_NOTIFICATION_EMAIL || 'setup@talntai.com';
   const email = (body.email || '').trim();
 
   const res = await fetch('https://api.resend.com/emails', {
