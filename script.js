@@ -19,6 +19,9 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 const form = document.getElementById('quoteForm');
 const status = document.getElementById('formStatus');
 if (form) {
+  const tsField = document.getElementById('formTs');
+  if (tsField) tsField.value = Date.now();
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!form.checkValidity()) { form.reportValidity(); return; }

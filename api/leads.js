@@ -1,3 +1,36 @@
+async function sendLeadNotification(body) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const notifyTo = process.env.LEAD_NOTIFICATION_EMAIL || 'hire@talntai.com';
+  const email = (body.email || '').trim();
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Talnt AI Website <notifications@talntai.com>',
+      to: [notifyTo],
+      reply_to: email || undefined,
+      subject: `New lead: ${body.offer || 'Talnt AI'} (${body.business || 'unspecified business'})`,
+      text: [
+        `Offer: ${body.offer || '(not specified)'}`,
+        `Business type: ${body.business || '(not specified)'}`,
+        `Tools used: ${body.tools || '(none provided)'}`,
+        `Notes: ${body.notes || '(none provided)'}`,
+        `Email: ${email || '(none provided)'}`,
+      ].join('\n'),
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Resend send failed: ${res.status} ${await res.text()}`);
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -10,6 +43,15 @@ module.exports = async function handler(req, res) {
   }
 
   const body = req.body || {};
+
+  // Bot check: honeypot field bots tend to fill, plus a minimum time-on-page.
+  // Both fail silently with a fake success so bots don't learn to adapt.
+  const submittedAt = Number(body.ts);
+  const tooFast = !submittedAt || Date.now() - submittedAt < 2000;
+  if (body.hp_website || tooFast) {
+    return res.status(200).json({ ok: true });
+  }
+
   const email = (body.email || '').trim();
   if (!email) {
     return res.status(400).json({ ok: false, error: 'Email is required' });
@@ -54,6 +96,12 @@ module.exports = async function handler(req, res) {
     } else if (!updateRes.ok) {
       const detail = await updateRes.text();
       return res.status(502).json({ ok: false, error: 'HubSpot update failed', detail });
+    }
+
+    try {
+      await sendLeadNotification(body);
+    } catch (err) {
+      console.error('Lead notification email failed:', err);
     }
 
     return res.status(200).json({ ok: true });
