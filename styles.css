@@ -57,7 +57,8 @@ ul { list-style: none; }
   padding: 1.1rem 3rem; background: rgba(247,247,251,0.9); backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.nav__mark { font-family: var(--display); font-size: 1.05rem; display: flex; align-items: baseline; gap: 0.4rem; }
+.nav__mark { font-family: var(--display); font-size: 1.05rem; display: flex; align-items: center; gap: 0.55rem; }
+.nav__mark svg { flex: none; }
 .nav__mark-sub { font-family: var(--sans); font-weight: 600; font-size: 0.8rem; color: var(--ink-soft); }
 .nav__links { display: flex; gap: 2rem; font-weight: 600; font-size: 0.9rem; }
 .nav__links a { color: var(--ink-soft); transition: color .2s; }
