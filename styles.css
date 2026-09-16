@@ -63,10 +63,10 @@ ul { list-style: none; }
 .nav__links a { color: var(--ink-soft); transition: color .2s; }
 .nav__links a:hover { color: var(--ink); }
 .nav__cta {
-  background: var(--ink); color: var(--paper); padding: 0.65rem 1.3rem; border-radius: 999px;
-  font-weight: 700; font-size: 0.85rem; transition: background .2s;
+  background: var(--accent); color: #fff; padding: 0.65rem 1.3rem; border-radius: 999px;
+  font-weight: 700; font-size: 0.85rem; transition: filter .2s;
 }
-.nav__cta:hover { background: var(--accent); }
+.nav__cta:hover { filter: brightness(0.9); }
 @media (max-width: 860px) {
   .nav { padding: 1rem 1.2rem; }
   .nav__links { display: none; }
@@ -122,11 +122,14 @@ ul { list-style: none; }
 .included { padding: 6rem 3rem; max-width: 1200px; margin: 0 auto; }
 .included__head { margin-bottom: 2.5rem; max-width: 60ch; }
 .included__head h2 { font-family: var(--display); font-size: clamp(1.7rem, 3vw, 2.4rem); margin-top: 0.4rem; }
+.included__head p { color: var(--ink-soft); margin-top: 0.8rem; font-size: 1rem; }
 .included__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; }
 .included__card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 2rem; }
 .included__num { font-family: var(--display); font-size: 0.9rem; color: var(--accent); }
 .included__card h3 { font-size: 1.15rem; margin: 0.7rem 0 0.6rem; }
 .included__card p { color: var(--ink-soft); font-size: 0.94rem; }
+.included__cta { margin-top: 2rem; color: var(--ink-soft); font-size: 0.95rem; }
+a.inline-link { color: var(--accent); font-weight: 600; }
 @media (max-width: 860px) { .included { padding: 4rem 1.2rem; } .included__grid { grid-template-columns: 1fr; } }
 
 /* COMPARE */
@@ -193,9 +196,10 @@ ul { list-style: none; }
 
 @media (max-width: 720px) { .footer { padding: 4rem 1.2rem 2rem; } .footer__row { flex-direction: column; align-items: flex-start; } }
 
-/* SIMPLE HERO (subpages) */
-.hero--simple { display: block; max-width: 780px; padding: 5rem 1.5rem 3.5rem; margin: 0 auto; }
+/* SIMPLE HERO (subpages) — matches .included's 1200px/3rem so left edges align down the page */
+.hero--simple { display: block; max-width: 1200px; padding: 5rem 3rem 3.5rem; margin: 0 auto; }
 .hero--simple .hero__sub { max-width: 60ch; }
+@media (max-width: 860px) { .hero--simple { padding: 3rem 1.2rem 2.5rem; } }
 
 /* FLOW DIAGRAM */
 .flow { padding: 1rem 3rem 5rem; max-width: 1100px; margin: 0 auto; }
