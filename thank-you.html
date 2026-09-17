@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're all set | Talnt AI</title>
+<meta name="description" content="Payment received — here's what happens next.">
+<meta name="theme-color" content="#f7f7fb">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://www.talntai.com/thank-you.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav__mark"><svg width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><path d="M50,8 L18,27 L18,63 L50,82 L50,58 L30,46.5 L50,35 Z" fill="#c15b2b"/><path d="M50,8 L82,27 L82,63 L50,82 L50,58 L70,46.5 L50,35 Z" fill="#4338ca"/></svg>Talnt<span class="nav__mark-sub">AI</span></a>
+  <div class="nav__links" id="navLinks">
+    <a href="ai-front-desk.html">AI Front Desk</a>
+    <a href="ai-setup.html">AI Setup</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="industries/index.html">Industries</a>
+    <a href="guides/index.html">Guides</a>
+  </div>
+  <button class="nav__toggle" id="navToggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  <a href="pricing.html" class="nav__cta">See pricing</a>
+</nav>
+
+<main id="main">
+<header class="hero hero--simple" id="top">
+  <p class="eyebrow">Payment received</p>
+  <h1 class="hero__title">You're all set.</h1>
+  <p class="hero__sub" id="thankYouMessage">We've got your payment and we're on it — check your email for a receipt and next steps within one business day.</p>
+</header>
+</main>
+
+<footer class="footer footer--simple">
+  <div class="footer__inner">
+    <div class="footer__row">
+      <div class="footer__meta">
+        <span>Talnt AI</span>
+        <a href="tel:+15808256824">580-TALNT-AI</a>
+        <span>&copy; 2026. All rights reserved.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var tier = params.get('tier');
+    var labels = {
+      audit: "your $197 workflow audit",
+      frontdesk: "your AI Front Desk setup",
+      setup: "your full AI setup"
+    };
+    if (tier && labels[tier]) {
+      document.getElementById('thankYouMessage').textContent =
+        "We've got your payment for " + labels[tier] + ". Check your email for a receipt, and we'll follow up within one business day to get started.";
+    }
+  })();
+</script>
+</body>
+</html>

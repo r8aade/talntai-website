@@ -39,8 +39,9 @@ ul { list-style: none; }
   display: inline-flex; align-items: center; justify-content: center;
   padding: 0.95rem 1.7rem; border-radius: 999px; font-weight: 700; font-size: 0.95rem;
   transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
-  cursor: pointer; border: none;
+  cursor: pointer; border: none; font-family: inherit;
 }
+.btn[hidden] { display: none; }
 .btn--primary { background: var(--accent); color: #fff; }
 .btn--primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(67,56,202,0.32); }
 .btn--ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
