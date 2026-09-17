@@ -80,8 +80,9 @@ ul { list-style: none; }
 .nav__toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 @media (max-width: 860px) {
-  .nav { padding: 1rem 1.2rem; flex-wrap: wrap; }
-  .nav__toggle { display: flex; }
+  .nav { padding: 1rem 1.2rem; flex-wrap: wrap; justify-content: flex-start; }
+  .nav__toggle { display: flex; order: -1; margin-left: 0; margin-right: 0.7rem; }
+  .nav__cta { margin-left: auto; }
   .nav__links {
     display: none; flex-direction: column; gap: 0; width: 100%;
     order: 4; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line);
