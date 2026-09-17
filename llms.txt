@@ -1,0 +1,25 @@
+# Talnt AI
+
+> Talnt AI helps small and medium businesses adopt AI without hiring an IT department. Three offers: a $197 AI Workflow Audit, AI Front Desk (a 24/7 AI phone & text agent starting at $297/mo), and a $2,000 one-time Full AI Setup built inside ChatGPT, Perplexity, or Claude.
+
+Talnt AI is a sister company to [Talnt Staffing](https://talntstaffing.com), which provides human staffing for the work AI can't or shouldn't handle.
+
+## Offers
+
+- [AI Front Desk](https://www.talntai.com/ai-front-desk.html): An AI agent that answers calls and texts 24/7, texts back missed calls, books appointments, and requests reviews. Starter $297/mo, Growth $497/mo, one-time $750 setup.
+- [Full AI Setup](https://www.talntai.com/ai-setup.html): A persistent AI assistant built on a business — a context pack, a custom GPT, and task-specific tools inside ChatGPT, Perplexity, or Claude. $2,000 one-time.
+- [Pricing](https://www.talntai.com/pricing.html): Side-by-side comparison of all three offers.
+
+## Industries served
+
+- [Home & trade services](https://www.talntai.com/industries/home-trade-services.html) (plumbers, HVAC, electricians, landscapers)
+- [Salons & spas](https://www.talntai.com/industries/salons.html)
+- [Auto repair shops](https://www.talntai.com/industries/auto-repair.html)
+- [Print shops](https://www.talntai.com/industries/print-shops.html) (also covers print workflow automation, not just phone answering)
+- [Ecommerce sellers](https://www.talntai.com/industries/ecommerce.html)
+- [Wholesale distributors](https://www.talntai.com/industries/wholesale.html)
+
+## Guides
+
+- [How Much Does an AI Receptionist Cost in 2026?](https://www.talntai.com/guides/ai-receptionist-cost.html)
+- [ChatGPT vs. a Custom AI Setup](https://www.talntai.com/guides/chatgpt-vs-custom-ai-setup.html)
