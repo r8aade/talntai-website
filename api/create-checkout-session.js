@@ -54,6 +54,8 @@ module.exports = async function handler(req, res) {
   params.set('success_url', `${origin}/thank-you.html?tier=${tier}&session_id={CHECKOUT_SESSION_ID}`);
   params.set('cancel_url', `${origin}/pricing.html`);
   params.set('metadata[tier]', tier);
+  params.set('phone_number_collection[enabled]', 'true');
+  params.set('billing_address_collection', 'required');
   prices.forEach((price, i) => {
     params.set(`line_items[${i}][price]`, price);
     params.set(`line_items[${i}][quantity]`, '1');

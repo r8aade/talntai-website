@@ -42,7 +42,15 @@ async function sendPaymentNotification(session) {
   const notifyTo = process.env.LEAD_NOTIFICATION_EMAIL || 'setup@talntai.com';
   const tier = (session.metadata && session.metadata.tier) || 'unknown';
   const amount = session.amount_total != null ? `$${(session.amount_total / 100).toFixed(2)}` : 'n/a';
-  const email = session.customer_details && session.customer_details.email;
+  const details = session.customer_details || {};
+  const email = details.email;
+  const phone = details.phone;
+  const addr = details.address;
+  const address = addr
+    ? [addr.line1, addr.line2, addr.city, addr.state, addr.postal_code, addr.country]
+        .filter(Boolean)
+        .join(', ')
+    : null;
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -58,7 +66,10 @@ async function sendPaymentNotification(session) {
       text: [
         `Offer: ${tier}`,
         `Amount: ${amount}`,
+        `Customer name: ${details.name || '(none provided)'}`,
         `Customer email: ${email || '(none provided)'}`,
+        `Customer phone: ${phone || '(none provided)'}`,
+        `Billing address: ${address || '(none provided)'}`,
         `Stripe session: ${session.id}`,
         `Mode: ${session.mode}`,
       ].join('\n'),
