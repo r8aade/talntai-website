@@ -17,8 +17,12 @@ async function sendLeadNotification(body) {
       reply_to: email || undefined,
       subject: `New lead: ${body.offer || 'Talnt AI'} (${body.business || 'unspecified business'})`,
       text: [
+        `Name: ${body.name || '(not specified)'}`,
         `Offer: ${body.offer || '(not specified)'}`,
         `Business type: ${body.business || '(not specified)'}`,
+        `Company: ${body.company || '(not specified)'}`,
+        `Phone: ${body.phone || '(not specified)'}`,
+        `Timezone: ${body.timezone || '(not specified)'}`,
         `Tools used: ${body.tools || '(none provided)'}`,
         `Notes: ${body.notes || '(none provided)'}`,
         `Email: ${email || '(none provided)'}`,
@@ -57,12 +61,25 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'Email is required' });
   }
 
-  const toolsUsed = body.notes
-    ? [body.tools, `Notes: ${body.notes}`].filter(Boolean).join(' — ')
-    : body.tools || '';
+  // timezone has no dedicated HubSpot property yet (would need one created
+  // in Settings > Properties first — sending an unrecognized property name
+  // fails the whole request), so it rides along in tools_used for now.
+  const toolsUsed = [
+    body.tools || null,
+    body.timezone ? `Timezone: ${body.timezone}` : null,
+    body.notes ? `Notes: ${body.notes}` : null,
+  ].filter(Boolean).join(' — ');
+
+  const nameParts = (body.name || '').trim().split(/\s+/).filter(Boolean);
+  const firstname = nameParts[0] || '';
+  const lastname = nameParts.slice(1).join(' ');
 
   const properties = {
     email,
+    firstname,
+    lastname,
+    phone: body.phone || '',
+    company: body.company || '',
     business_type: body.business || '',
     tai_offer: body.offer || '',
     tools_used: toolsUsed,

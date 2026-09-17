@@ -79,6 +79,35 @@
       <input type="hidden" name="ts" id="formTs">
       <div class="quote-form__row">
         <label>
+          <span>Name</span>
+          <input type="text" name="name" placeholder="Your name" required>
+        </label>
+        <label>
+          <span>Phone number</span>
+          <input type="tel" name="phone" placeholder="(555) 123-4567" required>
+        </label>
+      </div>
+      <div class="quote-form__row">
+        <label>
+          <span>Company (if applicable)</span>
+          <input type="text" name="company" placeholder="Business or company name">
+        </label>
+        <label>
+          <span>Timezone</span>
+          <select name="timezone" required>
+            <option value="" disabled selected>Select one</option>
+            <option>Eastern (ET)</option>
+            <option>Central (CT)</option>
+            <option>Mountain (MT)</option>
+            <option>Pacific (PT)</option>
+            <option>Alaska (AKT)</option>
+            <option>Hawaii (HT)</option>
+            <option>Other</option>
+          </select>
+        </label>
+      </div>
+      <div class="quote-form__row">
+        <label>
           <span>Which plan?</span>
           <select name="offer" required>
             <option value="" disabled selected>Select one</option>
