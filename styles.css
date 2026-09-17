@@ -269,7 +269,11 @@ a.inline-link { color: var(--accent); font-weight: 600; }
 .pricing-compare table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; min-width: 640px; }
 .pricing-compare th, .pricing-compare td { padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--line); text-align: left; font-size: 0.92rem; }
 .pricing-compare th { background: var(--paper-dim); font-weight: 700; }
-.pricing-compare td:first-child, .pricing-compare th:first-child { font-weight: 600; white-space: nowrap; }
+.pricing-compare td:first-child, .pricing-compare th:first-child {
+  font-weight: 600; white-space: nowrap;
+  position: sticky; left: 0; background: #fff; box-shadow: 1px 0 0 var(--line);
+}
+.pricing-compare th:first-child { background: var(--paper-dim); z-index: 1; }
 
 /* SIMPLE FOOTER (content pages without the lead form) */
 .footer--simple .footer__inner { max-width: 900px; }
