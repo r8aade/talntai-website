@@ -223,6 +223,45 @@ async function sendPaymentNotification(session) {
   }
 }
 
+async function sendRefundNotification(charge) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  const notifyTo = process.env.LEAD_NOTIFICATION_EMAIL || 'setup@talntai.com';
+  const tier = (charge.metadata && charge.metadata.tier) || 'unknown';
+  const refunded = `$${(charge.amount_refunded / 100).toFixed(2)}`;
+  const total = `$${(charge.amount / 100).toFixed(2)}`;
+  const isFull = charge.amount_refunded === charge.amount;
+  const billing = charge.billing_details || {};
+  const email = billing.email || charge.receipt_email;
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Talnt AI Website <notifications@talntai.com>',
+      to: [notifyTo],
+      reply_to: email || undefined,
+      subject: `Refund issued: ${tier} (${refunded}${isFull ? '' : ` of ${total}`})`,
+      text: [
+        `Offer: ${tier}`,
+        `${isFull ? 'Fully refunded' : 'Partially refunded'}: ${refunded}${isFull ? '' : ` of ${total}`}`,
+        `Customer name: ${billing.name || '(none provided)'}`,
+        `Customer email: ${email || '(none provided)'}`,
+        `Customer phone: ${billing.phone || '(none provided)'}`,
+        `Charge: ${charge.id}`,
+      ].join('\n'),
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Resend refund notification failed: ${res.status} ${await res.text()}`);
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -269,6 +308,18 @@ module.exports = async function handler(req, res) {
       } catch (err) {
         console.error('Customer receipt failed:', err);
       }
+    }
+  }
+
+  // Fires on both full and partial refunds, however they're issued —
+  // including refunding directly from the Stripe Dashboard, not just ones
+  // triggered through our own code.
+  if (event.type === 'charge.refunded') {
+    const charge = event.data.object;
+    try {
+      await sendRefundNotification(charge);
+    } catch (err) {
+      console.error('Refund notification failed:', err);
     }
   }
 

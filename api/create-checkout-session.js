@@ -56,6 +56,14 @@ module.exports = async function handler(req, res) {
   params.set('metadata[tier]', tier);
   params.set('phone_number_collection[enabled]', 'true');
   params.set('billing_address_collection', 'required');
+  // Session-level metadata doesn't propagate to the resulting charge, so a
+  // later refund event wouldn't know which tier it was for — set it on the
+  // payment intent (one-time) or subscription (recurring) too.
+  if (config.mode === 'payment') {
+    params.set('payment_intent_data[metadata][tier]', tier);
+  } else if (config.mode === 'subscription') {
+    params.set('subscription_data[metadata][tier]', tier);
+  }
   prices.forEach((price, i) => {
     params.set(`line_items[${i}][price]`, price);
     params.set(`line_items[${i}][quantity]`, '1');
