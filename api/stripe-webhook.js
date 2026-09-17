@@ -41,6 +41,89 @@ const TIER_LABELS = {
   setup: 'Full AI Setup',
 };
 
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+
+function receiptHtml({ name, label, amount, dateStr, receiptNumber, reference }) {
+  const greetingName = name ? escapeHtml(name) : 'there';
+  return `<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f7f7fb;font-family:Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7fb;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e4f2;">
+          <tr>
+            <td style="background:#4338ca;padding:28px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-family:Arial,sans-serif;font-size:20px;font-weight:800;color:#ffffff;letter-spacing:0.01em;">
+                    Talnt<span style="font-weight:600;opacity:0.85;">AI</span>
+                  </td>
+                  <td align="right" style="font-family:Arial,sans-serif;font-size:12px;color:#e3e0fb;text-transform:uppercase;letter-spacing:0.08em;">
+                    Receipt
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 16px;font-size:15px;color:#14141c;">Hi ${greetingName},</p>
+              <p style="margin:0 0 24px;font-size:15px;color:#14141c;line-height:1.5;">Thanks for your payment — here's your receipt.</p>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7fb;border-radius:10px;">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-size:14px;color:#4c4c5c;padding:6px 0;">Item</td>
+                        <td align="right" style="font-size:14px;color:#14141c;font-weight:600;padding:6px 0;">${escapeHtml(label)}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:14px;color:#4c4c5c;padding:6px 0;border-top:1px solid #e5e4f2;">Amount</td>
+                        <td align="right" style="font-size:20px;color:#4338ca;font-weight:800;padding:10px 0 6px;border-top:1px solid #e5e4f2;">${escapeHtml(amount)}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:14px;color:#4c4c5c;padding:6px 0;">Date</td>
+                        <td align="right" style="font-size:14px;color:#14141c;padding:6px 0;">${escapeHtml(dateStr)}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:14px;color:#4c4c5c;padding:6px 0;">Receipt No.</td>
+                        <td align="right" style="font-size:14px;color:#14141c;font-weight:600;padding:6px 0;">${escapeHtml(receiptNumber)}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:12px;color:#8a8996;padding:10px 0 0;">Stripe reference</td>
+                        <td align="right" style="font-size:12px;color:#8a8996;padding:10px 0 0;word-break:break-all;">${escapeHtml(reference)}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:24px 0 0;font-size:15px;color:#14141c;line-height:1.5;">We'll follow up within one business day to get started.</p>
+              <p style="margin:16px 0 0;font-size:14px;color:#4c4c5c;line-height:1.5;">Questions? Just reply to this email, or call <a href="tel:+15808256824" style="color:#4338ca;text-decoration:none;font-weight:600;">580-TALNT-AI</a>.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 32px;background:#f7f7fb;border-top:1px solid #e5e4f2;">
+              <p style="margin:0;font-size:12px;color:#8a8996;line-height:1.6;">
+                Talnt AI &middot; <a href="tel:+15808256824" style="color:#8a8996;text-decoration:none;">580-825-6824</a> &middot; <a href="mailto:setup@talntai.com" style="color:#8a8996;text-decoration:none;">setup@talntai.com</a><br>
+                <a href="https://www.talntai.com" style="color:#8a8996;text-decoration:none;">talntai.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 async function sendCustomerReceipt(session) {
   const apiKey = process.env.RESEND_API_KEY;
   const email = session.customer_details && session.customer_details.email;
@@ -50,6 +133,12 @@ async function sendCustomerReceipt(session) {
   const label = TIER_LABELS[tier] || 'Talnt AI';
   const amount = session.amount_total != null ? `$${(session.amount_total / 100).toFixed(2)}` : 'n/a';
   const name = session.customer_details.name || '';
+  const createdMs = session.created ? session.created * 1000 : Date.now();
+  const dateObj = new Date(createdMs);
+  const dateStr = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const datePart = dateObj.toISOString().slice(0, 10).replace(/-/g, '');
+  const shortCode = (session.payment_intent || session.id).replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+  const receiptNumber = `TAI-${datePart}-${shortCode}`;
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -61,6 +150,7 @@ async function sendCustomerReceipt(session) {
       from: 'Talnt AI <setup@talntai.com>',
       to: [email],
       subject: `Your receipt: ${label} — ${amount}`,
+      html: receiptHtml({ name, label, amount, dateStr, receiptNumber, reference: session.id }),
       text: [
         `Hi${name ? ` ${name}` : ''},`,
         '',
@@ -68,8 +158,9 @@ async function sendCustomerReceipt(session) {
         '',
         `Item: ${label}`,
         `Amount: ${amount}`,
-        `Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
-        `Reference: ${session.id}`,
+        `Date: ${dateStr}`,
+        `Receipt No.: ${receiptNumber}`,
+        `Stripe reference: ${session.id}`,
         '',
         `We'll follow up within one business day to get started.`,
         '',
