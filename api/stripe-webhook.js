@@ -35,6 +35,57 @@ function isValidStripeSignature(rawBody, sigHeader, secret, toleranceSeconds = 3
   return age <= toleranceSeconds;
 }
 
+const TIER_LABELS = {
+  audit: 'Workflow Audit Session',
+  frontdesk: 'AI Front Desk',
+  setup: 'Full AI Setup',
+};
+
+async function sendCustomerReceipt(session) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const email = session.customer_details && session.customer_details.email;
+  if (!apiKey || !email) return;
+
+  const tier = (session.metadata && session.metadata.tier) || 'unknown';
+  const label = TIER_LABELS[tier] || 'Talnt AI';
+  const amount = session.amount_total != null ? `$${(session.amount_total / 100).toFixed(2)}` : 'n/a';
+  const name = session.customer_details.name || '';
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Talnt AI <setup@talntai.com>',
+      to: [email],
+      subject: `Your receipt: ${label} — ${amount}`,
+      text: [
+        `Hi${name ? ` ${name}` : ''},`,
+        '',
+        `Thanks for your payment — here's your receipt.`,
+        '',
+        `Item: ${label}`,
+        `Amount: ${amount}`,
+        `Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+        `Reference: ${session.id}`,
+        '',
+        `We'll follow up within one business day to get started.`,
+        '',
+        `Questions? Reply to this email or call 580-TALNT-AI (580-825-6824).`,
+        '',
+        `Talnt AI`,
+        `https://www.talntai.com`,
+      ].join('\n'),
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Resend receipt send failed: ${res.status} ${await res.text()}`);
+  }
+}
+
 async function sendPaymentNotification(session) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return;
@@ -121,6 +172,11 @@ module.exports = async function handler(req, res) {
         await sendPaymentNotification(session);
       } catch (err) {
         console.error('Payment notification failed:', err);
+      }
+      try {
+        await sendCustomerReceipt(session);
+      } catch (err) {
+        console.error('Customer receipt failed:', err);
       }
     }
   }
